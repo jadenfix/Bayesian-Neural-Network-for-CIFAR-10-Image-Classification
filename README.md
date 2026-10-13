@@ -33,3 +33,16 @@ This repository demonstrates:
 🔍 Conv2D (128 filters, ReLU) → BatchNorm → MaxPooling
 🧠 Flatten → DenseFlipout (128 units, ReLU) → Dropout (40%)
 🎯 DenseFlipout (10 classes, Softmax)
+
+## Actual CPU Bayesian training lane
+
+```bash
+python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements-cpu.txt
+python -m unittest discover -s tests -v
+python cpu_bayes.py --epochs 2 --train-size 512 --test-size 128
+```
+
+The CPU lane downloads actual labeled CIFAR-10 examples from the university's hosted dataset, trains a variational CNN with Gaussian posterior reparameterization and per-example KL regularization, saves/reloads the model, and produces posterior-sampling predictions. BatchNorm remains in evaluation mode during Monte Carlo sampling while dropout and Bayesian weights remain stochastic. Data and parameters are real; this does not use mock inference. The hosted preview exports may re-encode images, so the measured subset accuracy is not a byte-identical canonical CIFAR benchmark. Sources: https://huggingface.co/datasets/uoft-cs/cifar10 and https://www.cs.toronto.edu/~kriz/cifar.html .
+
+This implementation preserves the original convolutional channel layout but uses posterior reparameterization instead of TensorFlow Probability DenseFlipout; it is an explicitly separate small CPU experiment. It does not establish full-dataset performance or calibrated uncertainty. The original TensorFlow notebook is retained with a compatible legacy-Keras profile, KL scaling and corrected MC sampling that does not update BatchNorm. That TensorFlow profile was syntax-checked, not executed in this constrained runtime. Use requirements-tensorflow.txt plus `pip install tf-keras==2.16.0 --no-deps` in a separate environment to run it.
