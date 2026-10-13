@@ -1,0 +1,7 @@
+# Original notebook profile; use an isolated Python environment.
+tensorflow-cpu==2.16.2
+tensorflow-probability==0.24.0
+numpy>=1.26,<2
+matplotlib>=3.8,<4
+scikit-learn>=1.4,<2
+# Then install tf-keras==2.16.0 with --no-deps to avoid a duplicate full tensorflow wheel.
